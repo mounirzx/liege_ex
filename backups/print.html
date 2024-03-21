@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DataTables Example</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.13.1/datatables.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mounirzx/Midnight@main/css/midnight.css">
+
+</head>
+<body>
+  <button class="midnight-btn">Toggle Dark Mode</button>
+  <button id="exportBtn" class="btn btn-primary">Export to PDF</button> <!-- Added export button -->
+  <div class="container mt-3">
+    <div class="mb-3">
+      <label for="selectOption" class="form-label">Select Data Option:</label>
+      <select class="form-select" id="selectOption">
+        <option value="1">Sous Parcelles</option>
+        <option value="2">Points</option>
+        <option value="3">Arbres</option>
+      </select>
+    </div>
+    <table id="example" class="table table-striped table-bordered" style="width:100%;">
+     <thead>
+      <tr>
+        <th>ID</th>
+        <th>num_Point</th>
+        <th>Serie</th>
+        <th>Sousparcelle</th>
+        <th>Code Wilaya</th>
+        <th>Commune</th>
+        <th>Total Diametre</th>
+        <th>Diametre(moyen)</th>
+        <th>Nombre des Arbres</th>
+        <th>Nombre des Points</th>
+        <th>Nombre Moyen arbres</th>
+        <th>Total Hauteur</th>
+        <th>Height (Moyenne)</th>
+        <th>Total Age</th>
+        <th>Age(Moyen)</th>
+        <th>epaisseur</th>
+        <th>surface_terriere</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="17" class="text-center loader" style="display: none;">Loading...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/datatables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  $(document).ready(function() {
+    var table;
+
+    function initializeDataTable() {
+      // Show loader
+      $('.loader').show();
+
+      // Destroy the existing DataTable if it exists
+      if ($.fn.DataTable.isDataTable('#example')) {
+        $('#example').DataTable().destroy();
+      }
+
+      // Initialize DataTable
+      table = $('#example').DataTable({
+        "processing": true,
+        "serverSide": false, // Set serverSide to false
+        "ajax": {
+          "url": "../php/data.php",
+          "type": "POST",
+          "data": function(d) {
+            d.option = $('#selectOption').val();
+          },
+          "dataSrc": function(json) {
+            return json.data;
+          }
+        },
+        "order": [], // Remove default sorting
+        "columns": [
+          { "data": "id" },
+          { "data": "num_Point" },
+          { "data": "serie" },
+          { "data": "Sousparcelle" },
+          { "data": "code_wilaya" },
+          { "data": "commune" },
+          { "data": "total_diametre" },
+          { "data": "average_diametre" },
+          { "data": "nombre_tree" },
+          { "data": "inv_row_num" },
+          { "data": "nombre_moyen2" },
+          { "data": "total_hauteur_total" },
+          { "data": "average_hauteur_total" },
+          { "data": "total_age" },
+          { "data": "average_age" },
+          { "data": "epaisseur" },
+          { "data": "surface_terriere" } 
+        ],
+        "paging": true, // Enable pagination
+        "pageLength": 10, // Set the number of rows per page
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]], // Customize length menu
+        "responsive": true // Make the table responsive
+      });
+
+      // Apply column search
+      table.columns().every(function () {
+        var that = this;
+
+        $('input', this.header()).on('keyup change click', function () {
+          event.stopPropagation();
+          if (that.search() !== this.value) {
+            that.search(this.value).draw();
+          }
+        });
+      });
+    }
+
+    // Initialize DataTable on document ready
+    initializeDataTable();
+
+    // Event listener for dropdown change
+    $('#selectOption').change(function() {
+      // Show loader
+      $('.loader').show();
+
+      // Reinitialize DataTable with new option
+      initializeDataTable();
+    });
+
+    // Show loader when AJAX request starts
+    $(document).ajaxStart(function() {
+      $('.loader').show();
+    });
+
+    // Hide loader when AJAX request completes
+    $(document).ajaxStop(function() {
+      $('.loader').hide();
+    });
+    console.log(typeof jsPDF);
+    // Export to PDF button click event
+    $('#exportBtn').on('click', function() {
+      
+      // Initialize jsPDF instance
+      var doc = new jsPDF();
+
+      // Iterate over each row of the data table
+      var rows = document.querySelectorAll('table tr');
+      var yOffset = 20; // Adjust vertical position for table data
+
+      rows.forEach(function(row, index) {
+        if(index !== 0) { // Exclude header row
+          // Extract text content of each cell in the row
+          var cells = row.querySelectorAll('td');
+          var rowData = [];
+          cells.forEach(function(cell) {
+            rowData.push(cell.textContent.trim());
+          });
+
+          // Add table data to the PDF
+          doc.text(10, yOffset, rowData.join('\n'));
+          yOffset += 10; // Increment vertical position for next row
+
+          // Add a new page for each row except the first one
+          if(index !== 1) {
+            doc.addPage();
+            yOffset = 20; // Reset vertical position for new page
+          }
+        }
+      });
+
+      // Save the PDF
+      doc.save('data_table.pdf');
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/gh/mounirzx/Midnight@main/js/midnight.js"></script>
+</body>
+</html>

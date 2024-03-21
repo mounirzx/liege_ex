@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <title>HTML Table to PDF Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.13.1/datatables.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/datatables.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-3">
+    <div class="mb-3">
+        <label for="selectOption" class="form-label">Select Data Option:</label>
+        <select class="form-select" id="selectOption">
+            <option value="1">Sous Parcelles</option>
+            <option value="2">Points</option>
+            <option value="3">Arbres</option>
+        </select>
+        <button id="download-pdf">Download PDF</button>
+    </div>
+    <table   id="example" class="table table-striped table-bordered" style="width:100%;">
+        <!-- Your table content goes here -->
+    </table>
+</div>
+
+
+<script>
+ document.getElementById('download-pdf').addEventListener('click', function() {
+    const doc = new jspdf.jsPDF();
+
+    // Get table rows
+    $('#example tbody tr').each(function(index, row) {
+        if (index > 0) {
+            doc.addPage(); // Add a new page for each row after the first one
+        }
+
+
+
+        const id = $(row).find('td:eq(0)').text().trim(); // Get ID from the first column
+        const num_Point = $(row).find('td:eq(1)').text().trim(); // Get Num Point from the second column
+        const forest_name = $(row).find('td:eq(2)').text().trim(); // Get forest_name from the 3 column
+        const canton = $(row).find('td:eq(3)').text().trim(); // Get Num canton from the 4 column
+        const serie = $(row).find('td:eq(4)').text().trim(); // Get Num serie from the 5 column
+        const parcelle = $(row).find('td:eq(5)').text().trim(); // Get parcelle from the 6 column
+        const sous_parcelle = $(row).find('td:eq(6)').text().trim(); // Get sous_parcelle from the 7 column
+        const surface_sous_parcelle = $(row).find('td:eq(7)').text().trim(); // Get surface_sous_parcelle from the 8 column
+        const altitude = $(row).find('td:eq(8)').text().trim(); // Get altitude from the 9 column
+        const exposition = $(row).find('td:eq(9)').text().trim(); // Get exposition from the 10 column
+        const roche_mere = $(row).find('td:eq(10)').text().trim(); // Get roche_mere from the 11 column
+        const profondeur_sol = $(row).find('td:eq(11)').text().trim(); // Get profondeur_sol from the 12 column
+        const erosion = $(row).find('td:eq(12)').text().trim(); // Get erosion from the 13 column
+        const occupation_actuelle = $(row).find('td:eq(13)').text().trim(); // Get occupation_actuelle from the 14 column
+        const stade_evolution = $(row).find('td:eq(14)').text().trim(); // Get stade_evolution from the 15 column
+        const Structure = $(row).find('td:eq(15)').text().trim(); // Get Structure from the 16 column
+        const densite = $(row).find('td:eq(16)').text().trim(); // Get densite from the 17 column
+        const etat_sanitaire = $(row).find('td:eq(17)').text().trim(); // Get etat_sanitaire from the 18 column
+        const regeneration_naturelle = $(row).find('td:eq(18)').text().trim(); // Get regeneration_naturelle from the 19 column
+        const sous_bois = $(row).find('td:eq(19)').text().trim(); // Get sous_bois from the 20 column
+        const importance_incenide = $(row).find('td:eq(20)').text().trim(); // Get importance_incenide from the 21 column
+        const date_dern_incendie = $(row).find('td:eq(21)').text().trim(); // Get date_dern_incendie from the 22 column
+        const details_coupe = $(row).find('td:eq(22)').text().trim(); // Get details_coupe from the 23 column
+        const defrichment = $(row).find('td:eq(23)').text().trim(); // Get defrichment from the 24 column
+        const parcours = $(row).find('td:eq(24)').text().trim(); // Get parcours from the 25 column
+        const aptitude = $(row).find('td:eq(25)').text().trim(); // Get aptitude from the 26 column
+        const vocation = $(row).find('td:eq(26)').text().trim(); // Get vocation from the 27 column
+        const nature_voc_deff = $(row).find('td:eq(27)').text().trim(); // Get nature_voc_deff from the 28 column
+        const proportion_voc_diff = $(row).find('td:eq(28)').text().trim(); // Get proportion_voc_diff from the 29 column
+
+        const average_diametre = $(row).find('td:eq(29)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const average_age = $(row).find('td:eq(30)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const epaisseur = $(row).find('td:eq(31)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const average_hauteur_total = $(row).find('td:eq(32)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const nombre_tree = $(row).find('td:eq(33)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const surface_terriere = $(row).find('td:eq(34)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const volume_m3 = $(row).find('td:eq(35)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const volume_m3_total = $(row).find('td:eq(36)').text().trim(); // Get proportion_voc_diff from the 30 column
+        
+
+        doc.setFontSize(16);
+        doc.text(50, 10, 'FICHE DE DESCRIPTION ET DE GESTION');
+        // Add title
+        doc.setFontSize(14);
+        doc.text(10, 30, '1. Identification');
+
+        // Add table
+        doc.autoTable({
+            head: [['ID', 'Num Point', 'Nom de la foret', 'Canton', 'Serie', 'Parcelle', 'S-Parcelle', '(Ha)']],
+            body: [[id, num_Point, forest_name, canton, serie, parcelle, sous_parcelle, surface_sous_parcelle]],
+            startY: 35,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [36, 135, 65] // Green background for table header
+            }
+        });
+
+        doc.setFontSize(14);
+            doc.text(10, 60, '2. Donnees ecologiques (donnes du milieu)');
+            
+            // Add table
+            doc.autoTable({
+                head: [['Altitude', 'Exposition', 'Roche mere', 'profondeur_sol', 'erosion']],
+                body: [[altitude, exposition, roche_mere, profondeur_sol, erosion]],
+                startY: 65,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [36, 135, 65] // Green background for table header
+                }
+            });
+            doc.setFontSize(14);
+                doc.text(10, 90, `3. Desciption du peuplement: `);
+
+
+            doc.setFontSize(11);
+                doc.text(15, 100, `Occupation actuelle:             ${occupation_actuelle}`);
+                doc.text(15, 105, `Stade d'evolution:                 ${stade_evolution}`);
+                doc.text(15, 110, `Structure:                              ${Structure}`);
+                doc.text(15, 115, `Densite:                                ${densite}`);
+                doc.text(15, 120, `Etat sanitaire:                       ${etat_sanitaire}`);
+                doc.text(15, 125, `Regeneration naturelle:        ${regeneration_naturelle}`);
+                // doc.text(15, 130, `Sous bois:         ${sous_bois}`);
+                const availableWidth = 150; // Adjust as needed based on your page layout
+const initialText = 'Sous bois:';
+const initialTextWidth = doc.getTextWidth(initialText);
+const sous_bois_text = `${sous_bois}`;
+const splitTextSousBois = doc.splitTextToSize(`${sous_bois_text}`, availableWidth - initialTextWidth);
+
+let nextSectionVerticalPosition = 130;
+
+// Render the initial text
+doc.text(15, nextSectionVerticalPosition, initialText);
+
+// Render the split text starting from the adjusted position
+for (let i = 0; i < splitTextSousBois.length; i++) {
+    doc.text(initialTextWidth + 46, nextSectionVerticalPosition + (i * 5), splitTextSousBois[i]);
+}
+
+nextSectionVerticalPosition += (splitTextSousBois.length * 5);
+
+
+        doc.text(15, nextSectionVerticalPosition, `Importance incenides:          ${importance_incenide}`);
+        doc.text(15, nextSectionVerticalPosition + 5, `date d'incendies:                   ${date_dern_incendie}`);
+        doc.text(15, nextSectionVerticalPosition + 10, `Delits de coupe:                       ${details_coupe}`);
+        doc.text(15, nextSectionVerticalPosition + 15, `Defrichment:                          ${defrichment}`);
+        doc.text(15, nextSectionVerticalPosition + 20, `Parcours:                               ${parcours}`);
+        doc.text(15, nextSectionVerticalPosition + 25, `Aptitude:                                ${aptitude}`);
+        doc.text(15, nextSectionVerticalPosition + 30, `Vocation:                               ${vocation}`);
+        doc.text(15, nextSectionVerticalPosition + 35, `Nature vocation differente:    ${nature_voc_deff}`);
+        doc.text(15, nextSectionVerticalPosition + 40, `proportion vocation differente:              ${proportion_voc_diff}`);
+
+
+                doc.setFontSize(14);
+                doc.text(10, nextSectionVerticalPosition + 50, '4. Caracteristique dendrometrique du peuplement:');
+                doc.setFontSize(12);
+                doc.text(20, nextSectionVerticalPosition + 60, '4,1 Caracteristique dendrometrique du peuplement:');
+
+        // Add table
+        doc.autoTable({
+            head: [['Essence', 'Age(ans)', 'Diametre(cm)', 'Hauteur(m)', 'Nombre arbres/Ha', 'G(m²/ha)', 'Volume (m³/Ha)', 'Volume Total(m³)']],
+            body: [['Chêne-liège', '', average_diametre, average_hauteur_total, nombre_tree,surface_terriere , volume_m3, volume_m3_total]],
+            startY: nextSectionVerticalPosition + 65,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [36, 135, 65] // Green background for table header
+            }
+        });
+        doc.setFontSize(12);
+                doc.text(20, nextSectionVerticalPosition +  90, '4,2 Subrieculture: situation actuelle et a la rcolte:');
+
+        // Add table
+        doc.autoTable({
+            head: [['Situation', 'Age', 'Epaisseur', 'Hauteur', 'VLR (m³/total)','VLR (m³/total)', 'VLR flam (m³)', 'VLR non flam (m³)', 'PLR flambé (Qx)','PLR non flambé (Qx)', 'An de recolte']],
+            body: [['Actuelle', average_age, epaisseur, '', '', '', '', '','','',''],
+            ['A la récolte', '', '', '', '', '', '', '','','','']],
+            startY: nextSectionVerticalPosition +  95,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [36, 135, 65] // Green background for table header
+            }
+        });
+       // Add a new page for each row
+    });
+
+    doc.save("download.pdf");
+});
+
+    </script>
+    
+    
+    
+
+<script>
+$(document).ready(function() {
+    $('#example').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": "php/data.php", // Replace "data.php" with the URL that fetches your data
+            "type": "POST",
+            "data": function(d) {
+                d.option = $('#selectOption').val();
+            },
+            "dataSrc": function(json) {
+                return json.data;
+            }
+        },
+        "columns": [
+            // Define your columns here
+            { "data": "id" },
+            { "data": "num_Point" },
+            { "data": "forest_name" },
+            { "data": "canton" },
+            { "data": "serie" },
+            { "data": "parcelle" },
+            { "data": "sous_parcelle" },
+            { "data": "surface_sous_parcelle" },
+            { "data": "altitude" },
+            { "data": "exposition" },
+            { "data": "roche_mere" },
+            { "data": "profondeur_sol" },
+            { "data": "erosion" },
+            { "data": "occupation_actuelle"},
+            { "data": "stade_evolution"},
+            { "data": "Structure"},
+            { "data": "densite"},
+            { "data": "etat_sanitaire"},
+            { "data": "regeneration_naturelle"},
+            { "data": "sous_bois"},
+            { "data": "importance_incenide"},
+            { "data": "date_dern_incendie"},
+            { "data": "details_coupe"},
+            { "data": "defrichment"},
+            { "data": "parcours"},
+            { "data": "aptitude"},
+            { "data": "vocation"},
+            { "data": "nature_voc_deff"},
+            { "data": "proportion_voc_diff"},
+            { "data": "average_diametre"},
+            { "data": "average_age"},
+            { "data": "epaisseur"},
+            { "data": "average_hauteur_total"},
+            { "data": "nombre_tree"},
+            { "data": "surface_terriere"},
+            { "data": "volume_m3"},
+            { "data": "volume_m3_total"}
+            
+            // Add more columns as needed
+        ],
+        "info": false,
+        "searching":false,
+        "paging": false,
+        "pageLength": 200,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "responsive": true
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML Table to PDF Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.13.1/datatables.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/datatables.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-3">
+    <div class="mb-3">
+        <label for="selectOption" class="form-label">Select Data Option:</label>
+        <select class="form-select" id="selectOption">
+            <option value="1">Sous Parcelles</option>
+            <option value="2">Points</option>
+            <option value="3">Arbres</option>
+        </select>
+        <button id="download-pdf">Download PDF</button>
+    </div>
+    <table   id="example" class="table table-striped table-bordered" style="width:100%;">
+        <!-- Your table content goes here -->
+    </table>
+</div>
+
+
+<script>
+ document.getElementById('download-pdf').addEventListener('click', function() {
+    const doc = new jspdf.jsPDF();
+
+    // Get table rows
+    $('#example tbody tr').each(function(index, row) {
+        const id = $(row).find('td:eq(0)').text().trim(); // Get ID from the first column
+        const num_Point = $(row).find('td:eq(1)').text().trim(); // Get Num Point from the second column
+        const forest_name = $(row).find('td:eq(2)').text().trim(); // Get forest_name from the 3 column
+        const canton = $(row).find('td:eq(3)').text().trim(); // Get Num canton from the 4 column
+        const serie = $(row).find('td:eq(4)').text().trim(); // Get Num serie from the 5 column
+        const parcelle = $(row).find('td:eq(5)').text().trim(); // Get parcelle from the 6 column
+        const sous_parcelle = $(row).find('td:eq(6)').text().trim(); // Get sous_parcelle from the 7 column
+        const surface_sous_parcelle = $(row).find('td:eq(7)').text().trim(); // Get surface_sous_parcelle from the 8 column
+        const altitude = $(row).find('td:eq(8)').text().trim(); // Get surface_sous_parcelle from the 8 column
+        const exposition = $(row).find('td:eq(9)').text().trim(); // Get surface_sous_parcelle from the 8 column
+        const roche_mere = $(row).find('td:eq(10)').text().trim(); // Get surface_sous_parcelle from the 8 column
+        const profondeur_sol = $(row).find('td:eq(11)').text().trim(); // Get surface_sous_parcelle from the 8 column
+        const erosion = $(row).find('td:eq(12)').text().trim(); // Get surface_sous_parcelle from the 8 column
+    
+
+        if (index !== 0 && id !== '' && num_Point !== '') { // Skip the header row and check for empty values
+            doc.addPage(); // Add a new page for each row except the first one
+            
+            // Add title
+            doc.setFontSize(14);
+            doc.text(10, 15, '1. Identification');
+            
+            // Add table
+            doc.autoTable({
+                head: [['ID', 'Num Point', 'Nom de la foret', 'Canton', 'Serie', 'Parcelle', 'Sous Parcelle', '(Ha)']],
+                body: [[id, num_Point, forest_name, canton, serie, parcelle, sous_parcelle, surface_sous_parcelle]],
+                startY: 20,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [36, 135, 65] // Green background for table header
+                }
+            });
+            doc.setFontSize(14);
+            doc.text(10, 55, '2. Donnees ecologiques (donnes du milieu)');
+            
+            // Add table
+            doc.autoTable({
+                head: [['Altitude', 'Exposition', 'Roche mere', 'profondeur_sol', 'erosion']],
+                body: [[altitude, exposition, roche_mere, profondeur_sol, erosion]],
+                startY: 60,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [36, 135, 65] // Green background for table header
+                }
+            });
+        }
+    });
+
+    doc.save("download.pdf");
+});
+
+    </script>
+    
+    
+    
+
+<script>
+$(document).ready(function() {
+    $('#example').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": "../php/data.php", // Replace "../php/../php/data.php" with the URL that fetches your data
+            "type": "POST",
+            "data": function(d) {
+                d.option = $('#selectOption').val();
+            },
+            "dataSrc": function(json) {
+                return json.data;
+            }
+        },
+        "columns": [
+            // Define your columns here
+            { "data": "id" },
+            { "data": "num_Point" },
+            { "data": "forest_name" },
+            { "data": "canton" },
+            { "data": "serie" },
+            { "data": "parcelle" },
+            { "data": "sous_parcelle" },
+            { "data": "surface_sous_parcelle" },
+            { "data": "altitude" },
+            { "data": "exposition" },
+            { "data": "roche_mere" },
+            { "data": "profondeur_sol" },
+            { "data": "erosion" },
+            // Add more columns as needed
+        ],
+        "info": false,
+        "searching":false,
+        "paging": false,
+        "pageLength": 200,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "responsive": true
+    });
+});
+</script>
+
+</body>
+</html>
