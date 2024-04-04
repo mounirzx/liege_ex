@@ -47,7 +47,7 @@
         const canton = $(row).find('td:eq(3)').text().trim(); // Get Num canton from the 4 column
         const serie = $(row).find('td:eq(4)').text().trim(); // Get Num serie from the 5 column
         const parcelle = $(row).find('td:eq(5)').text().trim(); // Get parcelle from the 6 column
-        const sous_parcelle = $(row).find('td:eq(6)').text().trim(); // Get sous_parcelle from the 7 column
+        const sous_parcelle = $(row).find('td:eq(6)').text().trim().toLowerCase(); // Get sous_parcelle from the 7 column
         const surface_sous_parcelle = $(row).find('td:eq(7)').text().trim(); // Get surface_sous_parcelle from the 8 column
         const altitude = $(row).find('td:eq(8)').text().trim(); // Get altitude from the 9 column
         const exposition = $(row).find('td:eq(9)').text().trim(); // Get exposition from the 10 column
@@ -76,7 +76,7 @@
         const epaisseur = $(row).find('td:eq(31)').text().trim(); // Get proportion_voc_diff from the 30 column
         const average_hauteur_total = $(row).find('td:eq(32)').text().trim(); // Get proportion_voc_diff from the 30 column
         const nombre_tree = $(row).find('td:eq(33)').text().trim(); // Get proportion_voc_diff from the 30 column
-        const surface_terriere = $(row).find('td:eq(34)').text().trim(); // Get proportion_voc_diff from the 30 column
+        const G_ha = $(row).find('td:eq(34)').text().trim(); // Get proportion_voc_diff from the 30 column
         const volume_m3 = $(row).find('td:eq(35)').text().trim(); // Get proportion_voc_diff from the 30 column
         const volume_m3_total = $(row).find('td:eq(36)').text().trim(); // Get proportion_voc_diff from the 30 column
         
@@ -161,7 +161,7 @@ nextSectionVerticalPosition += (splitTextSousBois.length * 5);
         // Add table
         doc.autoTable({
             head: [['Essence', 'Age(ans)', 'Diametre(cm)', 'Hauteur(m)', 'Nombre arbres/Ha', 'G(m²/ha)', 'Volume (m³/Ha)', 'Volume Total(m³)']],
-            body: [['Chêne-liège', '', average_diametre, average_hauteur_total, nombre_tree,surface_terriere , volume_m3, volume_m3_total]],
+            body: [['Chêne-liège', '', average_diametre, average_hauteur_total, nombre_tree,G_ha , volume_m3, volume_m3_total]],
             startY: nextSectionVerticalPosition + 65,
             theme: 'grid',
             headStyles: {
@@ -173,9 +173,9 @@ nextSectionVerticalPosition += (splitTextSousBois.length * 5);
 
         // Add table
         doc.autoTable({
-            head: [['Situation', 'Age', 'Epaisseur', 'Hauteur', 'VLR (m³/total)','VLR (m³/total)', 'VLR flam (m³)', 'VLR non flam (m³)', 'PLR flambé (Qx)','PLR non flambé (Qx)', 'An de recolte']],
-            body: [['Actuelle', average_age, epaisseur, '', '', '', '', '','','',''],
-            ['A la récolte', '', '', '', '', '', '', '','','','']],
+            // , 'Hauteur', 'VLR (m³/total)','VLR (m³/total)', 'VLR flam (m³)', 'VLR non flam (m³)', 'PLR flambé (Qx)','PLR non flambé (Qx)', 'An de recolte'
+            head: [['Situation', 'Age', 'Epaisseur']],
+            body: [['Actuelle', average_age, epaisseur]],
             startY: nextSectionVerticalPosition +  95,
             theme: 'grid',
             headStyles: {
@@ -244,7 +244,7 @@ $(document).ready(function() {
             { "data": "epaisseur"},
             { "data": "average_hauteur_total"},
             { "data": "nombre_tree"},
-            { "data": "surface_terriere"},
+            { "data": "G_ha"},
             { "data": "volume_m3"},
             { "data": "volume_m3_total"}
             

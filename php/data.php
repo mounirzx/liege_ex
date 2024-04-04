@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "liege1";
+$dbname = "liege2";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -14,9 +14,11 @@ if ($conn->connect_error) {
 
 // Get the selected option value from the request body
 $option = isset($_POST['option']) ? $_POST['option'] : null;
-
+$query="SELECT *
+FROM ressousparcelle2
+JOIN ex_old ON ressousparcelle2.id = ex_old.id";
 // Define the base query
-$query = "SELECT 
+$query2 = "SELECT 
 id, 
 num_Point,
 serie, 
@@ -178,23 +180,24 @@ JOIN
 JOIN 
     arbres ON points.id_point = arbres.id_point 
 WHERE 
-    sp.exist = 1 AND points.exist = 1 AND arbres.exist = 1";
+    sp.exist = 1 AND points.exist = 1 AND arbres.exist = 1
+    GROUP BY sp.id) AS subquery ORDER BY id ASC";
 
 // Adjust the query based on the selected option
-switch ($option) {
-    case '1':
-        $query .= " GROUP BY sp.id) AS subquery ORDER BY id ASC";
-        break;
-    case '2':
-        $query .= " GROUP BY points.id_point) AS subquery ORDER BY id ASC";
-        break;
-    case '3':
-        $query .= " GROUP BY arbres.id_arbre) AS subquery ORDER BY id ASC";
-        break;
-    default:
-        $query .= " GROUP BY sp.id) AS subquery ORDER BY id ASC";
-        break;
-}
+// switch ($option) {
+//     case '1':
+//         $query .= " GROUP BY sp.id) AS subquery ORDER BY id ASC";
+//         break;
+//     case '2':
+//         $query .= " GROUP BY points.id_point) AS subquery ORDER BY id ASC";
+//         break;
+//     case '3':
+//         $query .= " GROUP BY arbres.id_arbre) AS subquery ORDER BY id ASC";
+//         break;
+//     default:
+//         $query .= " GROUP BY sp.id) AS subquery ORDER BY id ASC";
+//         break;
+// }
 
 // Execute the query
 $result = $conn->query($query);
