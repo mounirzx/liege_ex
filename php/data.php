@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "liege2";
+$dbname = "liege";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -202,18 +202,25 @@ WHERE
 // Execute the query
 $result = $conn->query($query);
 
-
-function formatField($fieldValue) {
-    $fieldArray = explode(',', $fieldValue);
-    $formattedField = [];
-    foreach ($fieldArray as $fieldItem) {
-        $fieldParts = explode('-', $fieldItem);
-        if (isset($fieldParts[1])) {
-            $formattedField[] = trim($fieldParts[1]);
+// Function to format fields, removing leading and trailing commas for roche_mere
+function formatField($fieldValue, $field) {
+    if ($field === 'roche_mere') {
+        // Remove leading and trailing commas if present
+        return trim($fieldValue, ',');
+    } else {
+        // Process other fields
+        $fieldArray = explode(',', $fieldValue);
+        $formattedField = [];
+        foreach ($fieldArray as $fieldItem) {
+            $fieldParts = explode('-', $fieldItem);
+            if (isset($fieldParts[1])) {
+                $formattedField[] = trim($fieldParts[1]);
+            }
         }
+        return implode(', ', $formattedField);
     }
-    return implode(', ', $formattedField);
 }
+
 
 
 // Format data as JSON
@@ -222,17 +229,17 @@ if ($result) {
     while ($row = $result->fetch_assoc()) {
 
  // Apply formatting for specific fields
-     $fields_to_format = ['occupation_actuelle', 'sous_bois', 'roche_mere'];
+ $fields_to_format = ['occupation_actuelle', 'sous_bois', 'roche_mere'];
 
-     foreach ($fields_to_format as $field) {
-         if (isset($row[$field])) {
-             $row[$field] = formatField($row[$field]);
-         }
+ foreach ($fields_to_format as $field) {
+     if (isset($row[$field])) {
+         $row[$field] = formatField($row[$field], $field);
      }
+ }
 
         $fields_to_check = [
             'id', 'num_Point', 'forest_name', 'canton', 'serie', 'parcelle', 'sous_parcelle', 
-            'surface_sous_parcelle', 'altitude', 'exposition', 'roche_mere', 'profondeur_sol', 
+            'surface_sous_parcelle', 'altitude', 'exposition', '', 'profondeur_sol', 
             'erosion', 'occupation_actuelle', 'stade_evolution', 'Structure', 'densite', 
             'etat_sanitaire', 'regeneration_naturelle', 'sous_bois', 'importance_incenide', 
             'date_dern_incendie', 'details_coupe', 'defrichment', 'parcours', 'aptitude', 
